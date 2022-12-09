@@ -137,7 +137,7 @@ return(
   <div>
     <Head>
       <title>Whitelist Dapp</title>
-      <meta name="discription" content="Whitelist-Dapp"/>
+      <meta name="description" content="Whitelist-Dapp"/>
       <link rel="icon" href="/favicon.ico"/>
     </Head>
     <div calssName={styles.main}>
@@ -146,10 +146,10 @@ return(
         <div className={styles.description}>
           Its an NFT collection for developers in crypto.
         </div>
-        <div classname={styles.description}>
+        <div className={styles.description}>
           {numberOfWhitelisted} have already joined the Whitelist
         </div>
-        {renderButtion()}
+        {renderButton()}
       </div>
       <div>
         <img className={styles.image} src="./crypto-devs.svg"/>
