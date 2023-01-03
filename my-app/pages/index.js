@@ -140,7 +140,7 @@ return(
       <meta name="description" content="Whitelist-Dapp"/>
       <link rel="icon" href="/favicon.ico"/>
     </Head>
-    <div calssName={styles.main}>
+    <div className={styles.main}>
       <div>
         <h1 className={styles.title}>Welcome to Crypto Devs!</h1>
         <div className={styles.description}>
