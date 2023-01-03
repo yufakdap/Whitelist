@@ -70,7 +70,7 @@ export default function Home(){
 
 const checkIfAddressInWhitelist = async ()=>{
   try{
-    const signer = await getProvidersOrSigners(true);
+    const signer = await getProviderOrSigner(true);
     const whitelistContract = new Contract(
       WHITELIST_CONTRACT_ADDRESS,
       abi,
@@ -108,7 +108,7 @@ const renderButton=()=>{
       return <button classsName={styles.button}>Loading...</button>;
     }else{
       return(
-      <button onClick ={addAddressToWhitelist}className={styles.button}>
+      <button onClick ={addAddressToWhitelist} className={styles.button}>
       Join the Whitelist
       </button>
       );
