@@ -100,7 +100,7 @@ const renderButton=()=>{
   if(walletConnected){
     if(joinedWhitelist){
       return(
-        <div calssName={styles.description}>
+        <div className={styles.description}>
           Thanks for joining the Whitelist!
         </div>
       );
