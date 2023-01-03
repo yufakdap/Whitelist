@@ -21,3 +21,4 @@ function addAddressToWhitelist() public {
     whitelistedAddresses[msg.sender]= true;
     numAddressesWhitelisted +=1; 
 }
+}

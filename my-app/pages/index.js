@@ -60,7 +60,7 @@ export default function Home(){
 
       const whitelistContract = new Contract(WHITELIST_CONTRACT_ADDRESS,abi,provider);
       
-      const _numberOfWhitelisted= await whitelistContract.numAddressesWhitedlisted();
+      const _numberOfWhitelisted= await whitelistContract.numAddressesWhitelisted();
 
       setNumberOfWhitelisted(_numberOfWhitelisted);
     }catch(err){
@@ -79,8 +79,8 @@ const checkIfAddressInWhitelist = async ()=>{
     const address = await signer.getAddress();
     const _joinedWhitelist = await whitelistContract.whitelistedAddresses(address);
     setJoinedWhitelist(_joinedWhitelist);
-  }catch(err){
-    console.err(err);
+  }catch(error){
+    console.error(error);
   }
 };
 
