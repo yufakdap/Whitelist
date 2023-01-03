@@ -105,7 +105,7 @@ const renderButton=()=>{
         </div>
       );
     }else if (loading){
-      return <button classsName={styles.button}>Loading...</button>;
+      return <button className={styles.button}>Loading...</button>;
     }else{
       return(
       <button onClick ={addAddressToWhitelist} className={styles.button}>
