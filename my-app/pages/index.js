@@ -1,91 +1,100 @@
 import Head from "next/head";
-import styles from"../styles/Home.module.css";
-import Web3Modal from"web3modal";
-import {providers, Contract} from "ethers";
+import styles from "../styles/Home.module.css";
+import { providers, Contract} from "ethers";
 import {useEffect, useRef, useState} from "react";
-import {WHITELIST_CONTRACT_ADDRESS, abi} from "../constants";
+import { WHITELIST_CONTRACT_ADDRESS, abi } from "../constants";
+import Web3Modal from "web3modal";
 
 export default function Home(){
   const [walletConnected, setWalletConnected] = useState(false);
-  const [joinedWhitelist, setJoinedWhitelist] = useState(false);
-  const [loading, setLoading]= useState(false);
-  const [numberOfWhitelisted, setNumberOfWhitelisted]= useState(0);
+
+  const[joinedWhitelist, setJoinedWhitelist] = useState(false);
+
+  const[loading, setLoading] = useState(false); 
+
+  const[numberOfWhitelisted, setNumberOfWhitelisted]=useState(0);
+
   const web3ModalRef = useRef();
 
-  const getProviderOrSigner = async (needSigner = false)=>{
-
-    const provider = await web3ModalRef.current.connect();
+  const getProviderOrSigner =async(needSigner =false)=>{
+    const provider =await web3ModalRef.current.connect();
     const web3Provider = new providers.Web3Provider(provider);
 
-    const { chainId} = await web3Provider.getNetwork();
-    if (chainId !==5){
-      window.alert("Change the network to Goeril")
-      throw new Error("Change network to Goeril")
+    const {chainId}= await web3Provider.getNetwork();
+    if(chainId !==5){
+      window.alert("change the network to Goerli");
+      throw new Error("Change network to Goerli");
     }
-
     if (needSigner){
-      const signer = web3Provider.getSigner();
+      const signer =web3Provider.getSigner();
       return signer;
     }
     return web3Provider;
 
   };
 
-  const addAddressToWhitelist = async ()=> {
+  const addAddressToWhitelist =async ()=>{
     try{
+    const signer = await getProviderOrSigner(true);
 
-      const signer = await getProviderOrSigner(true);
+    const whitlelistContract =new Contract(
+      WHITELIST_CONTRACT_ADDRESS,
+      abi,signer
+    );
+    const tx= await whitlelistContract.addAddressToWhitelist();
+    setLoading(true);
+    await tx.wait();
+    setLoading(false);
+    
+    await getNumberOfWhitelisted();
+    setJoinedWhitelist(true);
+  } catch(err){
+    console.error(err);
+  }
 
+  };
+
+  const getNumberOfWhitelisted = async () => {
+    try {
+      // Get the provider from web3Modal, which in our case is MetaMask
+      // No need for the Signer here, as we are only reading state from the blockchain
+      const provider = await getProviderOrSigner();
+      // We connect to the Contract using a Provider, so we will only
+      // have read-only access to the Contract
       const whitelistContract = new Contract(
         WHITELIST_CONTRACT_ADDRESS,
         abi,
-        signer
+        provider
       );
-
-      const tx = await whitelistContract.addAddressToWhitelist();
-      setLoading(true);
-      await tx.wait();
-      setLoading(false);
-       await getNumberOfWhitelisted();
-       setJoinedWhitelist(true);
-    }catch(err){
-      console.error(err);
-    }
-  };
-
-  const getNumberOfWhitelisted = async ()=>{
-    try{
-
-      const provider = await getProviderOrSigner();
-
-      const whitelistContract = new Contract(WHITELIST_CONTRACT_ADDRESS,abi,provider);
-      
-      const _numberOfWhitelisted= await whitelistContract.numAddressesWhitelisted();
-
+      // call the numAddressesWhitelisted from the contract
+      const _numberOfWhitelisted =
+        await whitelistContract.numAddressesWhitelisted();
       setNumberOfWhitelisted(_numberOfWhitelisted);
-    }catch(err){
+    } catch (err) {
       console.error(err);
     }
   };
 
-const checkIfAddressInWhitelist = async ()=>{
+ 
+
+const checkIfAddressInWhitelist =async()=>{
   try{
-    const signer = await getProviderOrSigner(true);
-    const whitelistContract = new Contract(
-      WHITELIST_CONTRACT_ADDRESS,
-      abi,
-      signer
-    );
+    const signer=await getProviderOrSigner(true);
+    const whitelistContract=new Contract(
+     WHITELIST_CONTRACT_ADDRESS,
+     abi,
+     signer
+    ); 
     const address = await signer.getAddress();
+  
     const _joinedWhitelist = await whitelistContract.whitelistedAddresses(address);
     setJoinedWhitelist(_joinedWhitelist);
-  }catch(error){
-    console.error(error);
+  } catch(err){
+    console.error(err);
   }
 };
 
-
-const connectWallet = async ()=>{
+const connectWallet =async()=>{
   try{
     await getProviderOrSigner();
     setWalletConnected(true);
@@ -96,6 +105,7 @@ const connectWallet = async ()=>{
     console.error(err);
   }
 };
+
 const renderButton=()=>{
   if(walletConnected){
     if(joinedWhitelist){
@@ -104,30 +114,30 @@ const renderButton=()=>{
           Thanks for joining the Whitelist!
         </div>
       );
-    }else if (loading){
+    }else if(loading){
       return <button className={styles.button}>Loading...</button>;
     }else{
       return(
-      <button onClick ={addAddressToWhitelist} className={styles.button}>
-      Join the Whitelist
-      </button>
+        <button onClick = {addAddressToWhitelist} className={styles.button}>
+          Join the Whitelist
+        </button>
       );
     }
   }else{
-    return (
-      <button onClick ={connectWallet} className={styles.button}>
+    return(
+      <button onClick={connectWallet} className={styles.button}>
         Connect your wallet
       </button>
-    );
-  }
+      );
+    }
 };
 
 useEffect(()=>{
   if(!walletConnected){
-    web3ModalRef.current = new Web3Modal({
-      network: "goerli",
+    web3ModalRef.current=new Web3Modal({
+      network:"goerli",
       providerOptions:{},
-      disableInjectionProvider: false,
+      disableInjectedProvider: false,
     });
     connectWallet();
   }
@@ -137,17 +147,18 @@ return(
   <div>
     <Head>
       <title>Whitelist Dapp</title>
-      <meta name="description" content="Whitelist-Dapp"/>
+      <meta name="description" content="Whitleist-Dapp"/>
       <link rel="icon" href="/favicon.ico"/>
     </Head>
     <div className={styles.main}>
       <div>
-        <h1 className={styles.title}>Welcome to Crypto Devs!</h1>
+        <h1 className={styles.title}> Welcome To Crypto Devs!</h1>
         <div className={styles.description}>
-          Its an NFT collection for developers in crypto.
+          {       }
+          It&#39;s an NFT collection for developers in crypto.
         </div>
         <div className={styles.description}>
-          {numberOfWhitelisted} have already joined the Whitelist
+          {numberOfWhitelisted} have allready joined the Whitelist
         </div>
         {renderButton()}
       </div>
@@ -156,8 +167,10 @@ return(
       </div>
     </div>
     <footer className={styles.footer}>
-      Made with &#10084; by Crypto Devs
+      made with &#10084; by Crypto Devs
     </footer>
   </div>
-);
+)
+
+
 }
